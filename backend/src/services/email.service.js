@@ -1,15 +1,13 @@
-const { transporter } = require('../config/nodemailer');
+const { dispatchMail } = require('../config/nodemailer');
 const logger = require('../utils/logger');
 
 class EmailService {
     async sendMail({ to, subject, html, text }) {
         try {
-            const mailOptions = {
-                from: `"${process.env.SMTP_FROM_NAME}" <${process.env.SMTP_FROM_EMAIL}>`,
-                to, subject, html, text
-            };
-            const result = await transporter.sendMail(mailOptions);
-            logger.info(`Email sent to ${to}: ${result.messageId}`);
+            // dispatchMail uses Brevo's HTTPS API in production (Render blocks SMTP),
+            // and falls back to SMTP locally.
+            const result = await dispatchMail({ to, subject, html, text });
+            logger.info(`Email sent to ${to}`);
             return result;
         } catch (error) {
             logger.error(`Email sending failed to ${to}:`, error);

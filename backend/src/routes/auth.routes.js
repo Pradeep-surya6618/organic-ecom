@@ -47,12 +47,9 @@ router.post('/register', async (req, res) => {
 
         console.log(`🔑 Verification code for registration (${email}): ${otpCode}`);
 
-        // Send OTP email
-        try {
-            await emailService.sendOTPEmail(email, otpCode, 'registration');
-        } catch (emailErr) {
-            console.error(`✉️ Failed to send registration OTP email to ${email}:`, emailErr.message);
-        }
+        // Send OTP email in the background — don't block the response on it
+        emailService.sendOTPEmail(email, otpCode, 'registration')
+            .catch((emailErr) => console.error(`✉️ Failed to send registration OTP email to ${email}:`, emailErr.message));
 
         res.status(201).json({
             success: true,
@@ -151,12 +148,9 @@ router.post('/login', async (req, res) => {
 
         console.log(`🔑 Login verification code for (${email}): ${otpCode}`);
 
-        // Send OTP email
-        try {
-            await emailService.sendOTPEmail(email, otpCode, 'login');
-        } catch (emailErr) {
-            console.error(`✉️ Failed to send login OTP email to ${email}:`, emailErr.message);
-        }
+        // Send OTP email in the background — don't block the response on it
+        emailService.sendOTPEmail(email, otpCode, 'login')
+            .catch((emailErr) => console.error(`✉️ Failed to send login OTP email to ${email}:`, emailErr.message));
 
         res.status(200).json({
             success: true,
@@ -249,12 +243,9 @@ router.post('/resend-otp', async (req, res) => {
 
         console.log(`🔑 Resent OTP for (${email}) for [${purpose || 'auth'}]: ${otpCode}`);
 
-        // Send OTP email
-        try {
-            await emailService.sendOTPEmail(email, otpCode, purpose || 'registration');
-        } catch (emailErr) {
-            console.error(`✉️ Failed to send resent OTP email to ${email}:`, emailErr.message);
-        }
+        // Send OTP email in the background — don't block the response on it
+        emailService.sendOTPEmail(email, otpCode, purpose || 'registration')
+            .catch((emailErr) => console.error(`✉️ Failed to send resent OTP email to ${email}:`, emailErr.message));
 
         res.status(200).json({
             success: true,
@@ -291,12 +282,9 @@ router.post('/forgot-password', async (req, res) => {
 
         console.log(`🔑 Password reset verification code for (${email}): ${otpCode}`);
 
-        // Send OTP email
-        try {
-            await emailService.sendOTPEmail(email, otpCode, 'password_reset');
-        } catch (emailErr) {
-            console.error(`✉️ Failed to send password reset OTP email to ${email}:`, emailErr.message);
-        }
+        // Send OTP email in the background — don't block the response on it
+        emailService.sendOTPEmail(email, otpCode, 'password_reset')
+            .catch((emailErr) => console.error(`✉️ Failed to send password reset OTP email to ${email}:`, emailErr.message));
 
         res.status(200).json({
             success: true,
