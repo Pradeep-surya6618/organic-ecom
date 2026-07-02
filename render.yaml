@@ -1,0 +1,55 @@
+# Render Blueprint — deploys the Express backend (in /backend) as a web service.
+# Docs: https://render.com/docs/blueprint-spec
+#
+# Values marked `sync: false` are NOT stored in the repo — Render will ask you to
+# enter them in the dashboard (put your real secrets there, same as backend/.env.local).
+
+services:
+  - type: web
+    name: organic-store-api
+    runtime: node
+    plan: free
+    rootDir: backend            # the backend lives in the /backend subfolder
+    buildCommand: npm install
+    startCommand: npm start     # runs "node server.js" (binds to $PORT automatically)
+    healthCheckPath: /api/v1/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_REFRESH_SECRET
+        sync: false
+      - key: JWT_EXPIRES_IN
+        value: 1d
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: CLIENT_URL          # your Vercel frontend URL (for CORS + email links)
+        sync: false
+      # ── Email / SMTP (for order-confirmation invoices) ──
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        sync: false
+      - key: SMTP_SECURE
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: SMTP_FROM_EMAIL
+        sync: false
+      - key: SMTP_FROM_NAME
+        value: Organic Store
+      # Some mailer setups use these instead of SMTP_* — set whichever you use:
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASS
+        sync: false

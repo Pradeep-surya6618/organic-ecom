@@ -1,0 +1,36 @@
+{
+  "name": "organic-store-backend",
+  "version": "1.0.0",
+  "description": "Organic Store MERN Backend",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "predev": "node -e \"const { execSync } = require('child_process'); try { const stdout = execSync('netstat -ano'); const line = stdout.toString().split('\\n').find(l => l.includes(':5000') && l.includes('LISTENING')); if (line) { const pid = line.trim().split(/\\s+/).pop(); if (pid && pid !== '0') { process.kill(pid, 'SIGKILL'); console.log('🌿 Predev: Released port 5000 (killed zombie PID ' + pid + ')'); } } } catch (e) {}\"",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "bcryptjs": "^3.0.3",
+    "compression": "^1.8.1",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "dotenv": "^16.6.1",
+    "express": "^4.18.2",
+    "express-mongo-sanitize": "^2.2.0",
+    "express-rate-limit": "^7.5.1",
+    "express-validator": "^7.3.2",
+    "helmet": "^7.2.0",
+    "hpp": "^0.2.3",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^8.24.0",
+    "morgan": "^1.11.0",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.10.1",
+    "pdfkit": "^0.19.1",
+    "razorpay": "^2.9.6",
+    "xss-clean": "^0.1.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}

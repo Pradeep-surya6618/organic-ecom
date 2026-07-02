@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test OTP Auth</title>
+    <style>
+        body { font-family: Arial; max-width: 500px; margin: 50px auto; padding: 20px; background: #1a1a2e; color: white; }
+        input, button { width: 100%; padding: 15px; margin: 10px 0; font-size: 16px; border-radius: 10px; border: none; }
+        button { background: #4CAF50; color: white; cursor: pointer; }
+        button:hover { background: #45a049; }
+        #result { background: #16213e; padding: 20px; border-radius: 10px; margin-top: 20px; white-space: pre-wrap; }
+        .step { display: none; }
+        .step.active { display: block; }
+        h2 { color: #4CAF50; }
+        .otp-input { letter-spacing: 10px; text-align: center; font-size: 24px; }
+    </style>
+</head>
+<body>
+    <h1>🔐 Organic Store - OTP Test</h1>
+    
+    <!-- Step 1: Send OTP -->
+    <div id="step1" class="step active">
+        <h2>Step 1: Send OTP</h2>
+        <input type="text" id="name" placeholder="Your Name" value="Gokul">
+        <input type="email" id="email" placeholder="Your Email" value="gokulra2006@gmail.com">
+        <button onclick="sendOTP()">📧 Send OTP</button>
+    </div>
+    
+    <!-- Step 2: Verify OTP -->
+    <div id="step2" class="step">
+        <h2>Step 2: Verify OTP</h2>
+        <p>Check your terminal for the OTP number!</p>
+        <input type="text" id="otp" placeholder="Enter 6-digit OTP" class="otp-input" maxlength="6">
+        <button onclick="verifyOTP()">✅ Verify OTP</button>
+        <button onclick="resendOTP()" style="background:#666; margin-top:5px;">🔄 Resend OTP</button>
+    </div>
+    
+    <!-- Step 3: Logged In -->
+    <div id="step3" class="step">
+        <h2>✅ Logged In!</h2>
+        <p>Token saved. You can now test protected routes.</p>
+        <button onclick="getProfile()">👤 Get Profile</button>
+        <button onclick="logout()" style="background:#f44336; margin-top:10px;">🚪 Logout</button>
+    </div>
+    
+    <div id="result"></div>
+
+    <script>
+        const API = 'http://localhost:5000/api/v1';
+        let currentEmail = '';
+        let authToken = '';
+
+        function showStep(n) {
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.getElementById('step' + n).classList.add('active');
+        }
+
+        function showResult(data) {
+            document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+        }
+
+        async function sendOTP() {
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            currentEmail = email;
+
+            const res = await fetch(`${API}/auth/send-otp`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email })
+            });
+            
+            const data = await res.json();
+            showResult(data);
+            
+            if (data.success) {
+                alert('OTP sent! Check your terminal for the OTP number.');
+                showStep(2);
+            }
+        }
+
+        async function verifyOTP() {
+            const otp = document.getElementById('otp').value;
+
+            const res = await fetch(`${API}/auth/verify-otp`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: currentEmail, otp })
+            });
+            
+            const data = await res.json();
+            showResult(data);
+            
+            if (data.success) {
+                authToken = data.data.token;
+                alert('Login successful! Token saved.');
+                showStep(3);
+            }
+        }
+
+        async function resendOTP() {
+            const res = await fetch(`${API}/auth/resend-otp`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: currentEmail })
+            });
+            
+            const data = await res.json();
+            showResult(data);
+            alert('New OTP sent! Check your terminal.');
+        }
+
+        async function getProfile() {
+            const res = await fetch(`${API}/auth/me`, {
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            });
+            
+            const data = await res.json();
+            showResult(data);
+        }
+
+        async function logout() {
+            const res = await fetch(`${API}/auth/logout`, {
+                method: 'POST',
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            });
+            
+            const data = await res.json();
+            showResult(data);
+            authToken = '';
+            showStep(1);
+        }
+    </script>
+</body>
+</html>
