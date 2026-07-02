@@ -51,6 +51,7 @@ import AdminSettings from "./pages/admin/AdminSettings";
 import { useAuth } from "./context/AuthContext";
 
 import BottomNavbar from "./components/BottomNavbar";
+import ScrollToTop from "./components/ScrollToTop";
 
 function Storefront() {
   return (
@@ -134,6 +135,7 @@ function App() {
                         error: { duration: 4500, iconTheme: { primary: "#dc2626", secondary: "#ffffff" } },
                       }}
                     />
+                    <ScrollToTop />
                     <Routes>
                       <Route path="/admin/login" element={<AdminLogin />} />
                       <Route
